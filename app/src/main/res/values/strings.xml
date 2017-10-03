@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">InstantFiles</string>
+    <string name="action_settings">Settings</string>
+    <string name="search_hint">Search for files...</string>
+    <string name="app_not_found_toast">Application not found !</string>
+    <string name="applications">Apps</string>
+    <string name="media">Media</string>
+    <string name="documents">Docs</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <!-- onlongclick Dialog -->
+    <string name="cancel">Cancel</string>
+    <string name="rename_s">Rename Successful!</string>
+    <string name="rename_f">Rename Failed!</string>
+    <string name="del_f">Delete Failed!</string>
+    <string name="del_s">Delete Successful!</string>
+</resources>

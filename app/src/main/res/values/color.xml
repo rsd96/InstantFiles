@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    RED AND WHITE WITH GOLDEN YELLOW ACCENT
+    <color name="material_primary_dark">#d01716</color>
+    <color name="material_primary">#e51c23</color>
+    <color name="material_primary_light">#C5CAE9</color>
+    <color name="material_background">#FFFFFF</color>
+    <color name="material_accent">#ffd740</color>
+    <color name="material_primary_text">#212121</color>
+    <color name="material_secondary_text">#727272</color>
+    -->
+
+    <color name="material_primary_dark">#000000</color>
+    <color name="material_primary">#0a0a0a</color>
+    <color name="material_primary_light">#C5CAE9</color>
+    <color name="material_background">#ffffff</color>
+    <color name="material_accent">#e51c23</color>
+    <color name="material_primary_text">#ffffff</color>
+    <color name="material_secondary_text">#ffffff</color>
+
+</resources>
