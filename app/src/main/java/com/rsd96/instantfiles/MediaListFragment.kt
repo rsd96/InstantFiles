@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -95,12 +94,9 @@ class MediaListFragment : Fragment() {
             true
         }
 
-        if (flag) {
-            loadList()
-            flag = false
-        } else {
-            listView.adapter = MainActivity.mediaListAdapter
-        }
+
+        loadList()
+
     }
 
     private fun renameFile(from: File, to: File, pos: Int) {
@@ -146,6 +142,7 @@ class MediaListFragment : Fragment() {
 
 
     fun loadList() {
+        Log.d(TAG, "loadList()")
          disposable = Observable
                 .create(ObservableOnSubscribe<MutableList<File>> { emitter ->
                     //show prog. bar
@@ -171,11 +168,12 @@ class MediaListFragment : Fragment() {
     fun getMediaList() : MutableList<File> {
         val db = DatabaseHelper.getInstance(activity.applicationContext)
         val dbMediaList = db.getFileData(Types.MEDIA)
-        if(dbMediaList.isEmpty()) {
-            return dbMediaList
-        } else {
-            return dbMediaList
-        }
+
+        if (dbMediaList.isEmpty())
+            Log.d(TAG, "nullllllll")
+        else
+            Log.d(TAG, "not null")
+        return dbMediaList
     }
 
     /*inner class LoadList : AsyncTask<String, Void, MutableList<File>>() {
@@ -230,7 +228,7 @@ class MediaListFragment : Fragment() {
     }*/
 
 
-    inner class AddMediaToDB() : AsyncTask<Void, Void, Void>() {
+    /*inner class AddMediaToDB() : AsyncTask<Void, Void, Void>() {
         val db = DatabaseHelper.getInstance(activity.applicationContext)
         override fun doInBackground(vararg params: Void?): Void? {
 
@@ -239,7 +237,7 @@ class MediaListFragment : Fragment() {
             }
             return null
         }
-    }
+    }*/
 
     override fun onResume() {
         super.onResume()

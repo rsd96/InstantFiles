@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         //setup viewpager to give swipe effect
         tabsviewPager!!.adapter = mTabsAdapter
-        tabsviewPager!!.currentItem = 0
+        tabsviewPager!!.currentItem = 1
 
         mTabs.setupWithViewPager(tabsviewPager!!)
 

@@ -20,7 +20,7 @@ class DocumentListAdapter(internal var context: Context, internal var documentLi
     private var documentListFilter: DocumentListFilter? = null
 
     init {
-        Log.d(TAG, "MediaListAdapter")
+        Log.d(TAG, "DocumentListAdapter")
         listOfDocument = documentList
     }
 

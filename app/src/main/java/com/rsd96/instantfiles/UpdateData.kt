@@ -34,6 +34,7 @@ object UpdateData {
 
         override fun onPostExecute(result: Void?) {
             if(MainActivity.mediaListAdapter != null)
+                MainActivity.mediaListAdapter?.mediaList = Utilities.mediaFileList
                 MainActivity.mediaListAdapter!!.notifyDataSetChanged()
         }
     }
@@ -62,6 +63,7 @@ object UpdateData {
 
         override fun onPostExecute(result: Void?) {
             if(MainActivity.documentListAdapter != null)
+                MainActivity.documentListAdapter?.documentList = Utilities.documentFileList
                 MainActivity.documentListAdapter!!.notifyDataSetChanged()
         }
     }

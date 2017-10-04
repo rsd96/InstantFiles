@@ -50,13 +50,6 @@ class DocumentListFragment : Fragment(), AdapterView.OnItemClickListener, Adapte
         listView.onItemLongClickListener = this
 
         loadList()
-
-        /*if (flag) {
-            loadList()
-            flag = false
-        } else {
-            listView.adapter = MainActivity.documentListAdapter
-        }*/
     }
 
     fun loadList() {
