@@ -52,8 +52,10 @@ class AppListFragment : Fragment() {
 
         override fun onPreExecute() {
 
-            progressBar.visibility = View.VISIBLE
-            progressBar.isIndeterminate = true
+            if(progressBar != null) {
+                progressBar.visibility = View.VISIBLE
+                progressBar.isIndeterminate = true
+            }
         }
 
 
@@ -62,7 +64,8 @@ class AppListFragment : Fragment() {
         }
 
         override fun onPostExecute(results: MutableList<ApplicationInfo>) {
-            progressBar.visibility = View.GONE
+            if(progressBar != null)
+                progressBar.visibility = View.GONE
             MainActivity.appListAdapter = AppListAdapter(activity.applicationContext, results, activity.packageManager)
             listView.adapter = MainActivity.appListAdapter
         }

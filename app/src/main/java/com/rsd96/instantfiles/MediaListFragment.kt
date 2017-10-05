@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,6 +24,8 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.files_list_view.*
 import java.io.File
 
+
+
 /**
  * Created by Ramshad on 8/8/15.
  */
@@ -34,7 +37,7 @@ class MediaListFragment : Fragment() {
     }
     private val TAG = "MediaListFragment"
     private var flag = true
-    internal val dialogListItems = arrayOf<CharSequence>("Rename", "Delete", "Properties")
+    internal val dialogListItems = arrayOf<CharSequence>("Rename", "Delete", "Properties", "Open containing folder")
     @get:JvmName("getContext_") private var context: Context? = null // annotation to avoid conflicts caused due to genration of getters by kotlin compiler
     lateinit var disposable: Disposable
 
@@ -62,16 +65,17 @@ class MediaListFragment : Fragment() {
             val mediaFileInfo = File(mediaListAdapter.getItem(position).toString())
             val builder = AlertDialog.Builder(activity)
             builder.setItems(dialogListItems) { dialog, which ->
+                val filePath = mediaFileInfo.absolutePath.toString()
                 when (which) {
                     0 -> {
                         val et = EditText(context)
                         et.setTextColor(Color.RED)
                         DialogBoxes.dialogBox(activity, "Rename to:", null, et, "Rename", { dialog, which ->
-                            val f = mediaFileInfo.absolutePath.toString()
                             val from = File(mediaFileInfo.absolutePath.toString())
                             val ext = MimeTypeMap.getFileExtensionFromUrl(mediaFileInfo.name.substring(mediaFileInfo.name.lastIndexOf(".")))
-                            val dir = File(f.substring(0, f.lastIndexOf("/")))
+                            val dir = File(filePath.substring(0, filePath.lastIndexOf("/")))
                             val to = File(dir, et.text.toString() + "." + ext)
+                            et.setText(from.name)
                             renameFile(from, to, position)
                         })
                     }
@@ -86,6 +90,24 @@ class MediaListFragment : Fragment() {
                         hidden = mediaFileInfo.isHidden
 
                         DialogBoxes.dialog(activity, mediaFileInfo.name, mediaFileInfo.toString(), mediaFileInfo.length(), hidden)
+                    }
+
+                    3 -> {
+                        Log.d(TAG, Environment.getExternalStorageDirectory().path)
+                        Log.d(TAG, "${mediaFileInfo.parent}")
+                        Log.d(TAG, "${mediaFileInfo.absolutePath}")
+                        val rootpath = Environment.getExternalStorageDirectory().path;
+
+                        val file = File( "$rootpath/${mediaFileInfo.parent.toString().drop(rootpath.toString().length)}/")
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(Uri.fromFile(file), "*/*")
+
+
+                        if (intent.resolveActivityInfo(activity.packageManager, 0) != null) {
+                            startActivity(Intent.createChooser(intent, "View file in folder"))
+                        } else {
+                            Toast.makeText(context, "File explorer app not found!", Toast.LENGTH_SHORT ).show()
+                        }
                     }
                 }
             }
@@ -104,9 +126,9 @@ class MediaListFragment : Fragment() {
             Toast.makeText(context, "File already exists!", Toast.LENGTH_SHORT).show()
         } else {
             if (from.renameTo(to)) {
-                MainActivity.mediaListAdapter?.mediaList?.removeAt(pos)
-                MainActivity.mediaListAdapter?.notifyDataSetChanged()
-                /*LoadList().execute()*/
+                Utilities.mediaFileList.remove(from)
+                Utilities.mediaFileList.add(to)
+                UpdateData.AddMediaToDB(activity.applicationContext).execute(Utilities.mediaFileList)
                 Toast.makeText(context, "Rename Successful!", Toast.LENGTH_SHORT).show()
                 scanFile(context, to)
             } else
@@ -176,68 +198,6 @@ class MediaListFragment : Fragment() {
         return dbMediaList
     }
 
-    /*inner class LoadList : AsyncTask<String, Void, MutableList<File>>() {
-
-        internal var dbHelper = DatabaseHelper.getInstance(activity)
-
-        override fun onPreExecute() {
-            //mediaListFromDB = dbHelper.getDataFromDB(DatabaseHelper.TABLE_MEDIA_NAME)
-
-            progressBar.visibility = View.VISIBLE
-            progressBar.isIndeterminate = true
-
-        }
-
-        override fun doInBackground(vararg params: String): MutableList<File> {
-            val db = DatabaseHelper.getInstance(activity.applicationContext)
-            val dbMediaList = db.getFileData(Types.MEDIA)
-            for(i in dbMediaList)
-                Log.d(TAG, "Media DB data : $i")
-            if(dbMediaList.isEmpty()) {
-                if (!MainActivity.loadingFiles) {
-                    MainActivity.loadingFiles = true
-                    Log.d(TAG, "loadingFiles-true")
-                    Log.d(TAG, "loading Files ... ")
-                    Utilities.setFiles(MainActivity.root)
-                    MainActivity.loadingFiles = false
-                    Log.d(TAG, "Files loaded")
-                } else {
-                    // if document fragment is already started setFiles() , then just sleep till its done.
-                    try {
-                        while (MainActivity.loadingFiles) {
-                            Thread.sleep(1000)
-                            Log.d(TAG, "sleeping")
-                        }
-                    } catch (e: InterruptedException) {
-                        e.printStackTrace()
-                    }
-                }
-                AddMediaToDB().execute()
-                return Utilities.mediaFileList
-            } else {
-                return dbMediaList
-            }
-        }
-
-        override fun onPostExecute(results: MutableList<File>) {
-            MainActivity.mediaListAdapter = context?.let { MediaListAdapter(it, results) }
-            listView.adapter = MainActivity.mediaListAdapter
-
-            progressBar.visibility = View.GONE
-        }
-    }*/
-
-
-    /*inner class AddMediaToDB() : AsyncTask<Void, Void, Void>() {
-        val db = DatabaseHelper.getInstance(activity.applicationContext)
-        override fun doInBackground(vararg params: Void?): Void? {
-
-            for (i in Utilities.mediaFileList) {
-                db.insertData(i.absolutePath, Types.MEDIA)
-            }
-            return null
-        }
-    }*/
 
     override fun onResume() {
         super.onResume()
